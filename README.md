@@ -10,9 +10,25 @@ The system combines embedded hardware, cloud-based communication, and a responsi
 
 ---
 
+## 📸 Project Gallery
+
+### 📱 Dashboard
+
+![Dashboard](Dashboard.png)
+
+### 🎛️ Smart Control
+
+![Smart Control](smart%20control.png)
+
+### 🔌 Wiring
+
+![Wiring](wiring.jpeg)
+
+---
+
 ## 🚀 Project Overview
 
-The system allows users to remotely control four electrical loads through a Web/Mobile interface
+The system allows users to remotely control four electrical loads through a Web/Mobile interface.
 
 Communication between the control interface and the ESP8266 is handled through **MQTT over HiveMQ Cloud**, with a dedicated device identity for each controller.
 
@@ -70,8 +86,8 @@ Communication between the control interface and the ESP8266 is handled through *
              ┌─────────────────────────┐
              │       ESP8266 D1 Mini   │
              │     Smart Switch MCU    │
-             └──────┬──────┬──────┬───┘
-                    │      │      │
+             └──────┬──────┬──────┬────┘
+                    │      │      │      │
                    R1     R2     R3     R4
                     │      │      │      │
                     ▼      ▼      ▼      ▼
@@ -125,7 +141,7 @@ eng_ahmed_ebaid/devices/AE0000019/relay4/set
 eng_ahmed_ebaid/devices/AE0000019/relay4/state
 ```
 
-### Commands
+### Supported Commands
 
 ```text
 ON
@@ -150,7 +166,6 @@ The project includes a responsive Web/Mobile control interface.
 
 Users can:
 
-* Log in using the device MQTT credentials
 * Connect to HiveMQ Cloud
 * Control each relay independently
 * Control all relays simultaneously
@@ -171,62 +186,6 @@ mobile-web-app/
 
 The system uses device-specific MQTT credentials and MQTT over TLS.
 
-Real credentials are **not included in this repository**.
+Real credentials should not be included in a public repository.
 
-> Never upload real MQTT passwords, Wi-Fi passwords, or other private credentials to a public GitHub repository.
-
----
-
-## 🧠 ESP8266 Firmware
-
-The firmware provides:
-
-* Relay control
-* MQTT communication
-* Wi-Fi management
-* Access Point configuration
-* EEPROM storage
-* Relay state publishing
-* Relay name publishing
-* MQTT command processing
-* Web-based local configuration
-
-Firmware location:
-
-```text
-firmware/
-└── ESP8266_4Relay/
-    └── ESP8266_4Relay.ino
-```
-
----
-
-## 🗂️ Project Structure
-
-```text
-ESLAM-SMART-SWITCH/
-│
-├── firmware/
-│   └── ESP8266_4Relay/
-│       └── ESP8266_4Relay.ino
-│
-├── mobile-web-app/
-│   └── remote_control.html
-│
-├── hardware/
-│   └── components-list.md
-│
-├── documentation/
-│   ├── mqtt-topi
-```
-## 📸 Project Gallery
-
-### 🎛️ Smart Control
-![Smart Control](smart%20control.png)
-
-### 🔌 Wiring
-![Wiring](wiring.jpeg)
-
-### 📱 Dashboard
-![Dashboard](Dashboard.png)
-
+> Never publish MQTT passwords, Wi-Fi passwords, or other privat
