@@ -1,0 +1,369 @@
+كود الموبايل بتاعنا اهه
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volt • Remote Control</title>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top, #3b0764 0%, #170b2e 35%, #050505 100%);
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: rgba(20, 10, 35, 0.95);
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #6d28d9;
+      box-shadow: 0 5px 25px rgba(124, 58, 237, 0.25);
+    }
+
+    .title {
+      font-size: 26px;
+      font-weight: bold;
+      color: #d8b4fe;
+    }
+
+    .subtitle {
+      margin-top: 7px;
+      color: #a78bfa;
+      font-size: 14px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 550px;
+      margin: auto;
+      padding: 18px;
+    }
+
+    .card {
+      background: linear-gradient(145deg, #1e1235, #0d0d12);
+      border: 1px solid #4c1d95;
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 15px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45);
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 7px;
+      color: #c4b5fd;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      border-radius: 12px;
+      border: 1px solid #6d28d9;
+      background: #0b0712;
+      color: #fff;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 14px;
+      padding: 15px;
+      margin-top: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .connect {
+      background: linear-gradient(135deg, #9333ea, #6d28d9);
+    }
+
+    .disconnect {
+      background: #374151;
+    }
+
+    .relay {
+      border-top: 1px solid #3b2460;
+      padding-top: 14px;
+      margin-top: 14px;
+    }
+
+    .name {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .state {
+      font-size: 13px;
+      color: #a78bfa;
+      margin-top: 5px;
+    }
+
+    .on {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+    }
+
+    .off {
+      background: linear-gradient(135deg, #4b5563, #1f2937);
+    }
+
+    .all {
+      display: flex;
+      gap: 10px;
+    }
+
+    .all button {
+      flex: 1;
+    }
+
+    .allon {
+      background: linear-gradient(135deg, #7e22ce, #581c87);
+    }
+
+    .alloff {
+      background: linear-gradient(135deg, #b91c1c, #7f1d1d);
+    }
+
+    .status {
+      text-align: center;
+      margin-top: 15px;
+      color: #c4b5fd;
+      font-size: 14px;
+    }
+
+    .small {
+      font-size: 12px;
+      color: #9ca3af;
+      line-height: 1.7;
+      margin-top: 12px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="title">Volt Smart Control</div>
+    <div class="subtitle">ESP8266 • 4 Relay • Remote Control</div>
+  </div>
+
+  <div class="container">
+    <!-- كارت تسجيل الدخول -->
+    <div class="card" id="loginCard">
+      <label>Device ID / Username</label>
+      <input id="user" autocomplete="username" placeholder="مثال: AE000001">
+
+      <label>MQTT Password</label>
+      <input id="pass" type="password" autocomplete="current-password" placeholder="MQTT password">
+
+      <button class="connect" onclick="connectMQTT()">☁️ الاتصال وحفظ البيانات</button>
+      <div class="small">
+        يتم تسجيل الدخول مرة واحدة فقط، وسيتم حفظ البيانات للاتصال التلقائي في المرات القادمة.
+      </div>
+    </div>
+
+    <!-- كارت التحكم في الريلايات -->
+    <div class="card hidden" id="controlCard">
+      <div class="relay">
+        <div class="name" id="name1">Relay 1</div>
+        <div class="state" id="state1">OFF</div>
+        <button id="b1" class="off" onclick="toggleRelay(1)">تشغيل</button>
+      </div>
+
+      <div class="relay">
+        <div class="name" id="name2">Relay 2</div>
+        <div class="state" id="state2">OFF</div>
+        <button id="b2" class="off" onclick="toggleRelay(2)">تشغيل</button>
+      </div>
+
+      <div class="relay">
+        <div class="name" id="name3">Relay 3</div>
+        <div class="state" id="state3">OFF</div>
+        <button id="b3" class="off" onclick="toggleRelay(3)">تشغيل</button>
+      </div>
+
+      <div class="relay">
+        <div class="name" id="name4">Relay 4</div>
+        <div class="state" id="state4">OFF</div>
+        <button id="b4" class="off" onclick="toggleRelay(4)">تشغيل</button>
+      </div>
+
+      <div class="all">
+        <button class="allon" onclick="sendAll('ON')">تشغيل الكل</button>
+        <button class="alloff" onclick="sendAll('OFF')">إيقاف الكل</button>
+      </div>
+
+      <button class="disconnect" onclick="disconnectMQTT()">تسجيل الخروج (مسح البيانات)</button>
+    </div>
+
+    <!-- حالة الاتصال -->
+    <div class="status" id="status">غير متصل</div>
+  </div>
+
+  <script>
+    const HOST = 'fa214242813b40d895f06590b2db5c5d.s1.eu.hivemq.cloud';
+    const PORT = 8884;
+    const WS_PATH = '/mqtt';
+
+    let BASE = '';
+    let client = null;
+    let states = [false, false, false, false];
+
+    function setStatus(text) {
+      document.getElementById('status').textContent = text;
+    }
+
+    function topic(index, type) {
+      return BASE + 'relay' + index + '/' + type;
+    }
+
+    function updateRelay(index, isOn) {
+      states[index - 1] = isOn;
+      const btn = document.getElementById('b' + index);
+      const stateLabel = document.getElementById('state' + index);
+
+      if (isOn) {
+        btn.textContent = 'إيقاف';
+        btn.className = 'on';
+        stateLabel.textContent = 'ON';
+      } else {
+        btn.textContent = 'تشغيل';
+        btn.className = 'off';
+        stateLabel.textContent = 'OFF';
+      }
+    }
+
+    // **فحص البيانات المخزنة وتوصيل الجهاز تلقائياً عند فتح الصفحة**
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedUser = localStorage.getItem('mqtt_user');
+      const savedPass = localStorage.getItem('mqtt_pass');
+
+      if (savedUser && savedPass) {
+        document.getElementById('user').value = savedUser;
+        document.getElementById('pass').value = savedPass;
+        connectMQTT();
+      }
+    });
+
+    function connectMQTT() {
+      const username = document.getElementById('user').value.trim();
+      const password = document.getElementById('pass').value;
+
+      if (!username || !password) {
+        setStatus('اكتب Username و Password');
+        return;
+      }
+
+      // **حفظ البيانات في المتصفح للاستخدام التلقائي لاحقاً**
+      localStorage.setItem('mqtt_user', username);
+      localStorage.setItem('mqtt_pass', password);
+
+      BASE = 'eng_ahmed_ebaid/devices/' + username + '/';
+
+      setStatus('جاري الاتصال بـ HiveMQ...');
+      const clientId = 'WEB-' + Math.random().toString(16).slice(2);
+
+      client = mqtt.connect('wss://' + HOST + ':' + PORT + WS_PATH, {
+        username: username,
+        password: password,
+        clientId: clientId,
+        clean: true,
+        reconnectPeriod: 3000,
+        connectTimeout: 10000
+      });
+
+      client.on('connect', () => {
+        setStatus('🟢 متصل بالـCloud (' + username + ')');
+        document.getElementById('loginCard').classList.add('hidden');
+        document.getElementById('controlCard').classList.remove('hidden');
+
+        for (let i = 1; i <= 4; i++) {
+          client.subscribe(topic(i, 'state'));
+          client.subscribe(topic(i, 'name'));
+        }
+        client.subscribe(BASE + 'all/state');
+      });
+
+      client.on('message', (topicReceived, payload) => {
+        const message = payload.toString();
+
+        for (let i = 1; i <= 4; i++) {
+          if (topicReceived === topic(i, 'state')) {
+            updateRelay(i, message === 'ON' || message === '1');
+          }
+          if (topicReceived === topic(i, 'name') && message) {
+            document.getElementById('name' + i).textContent = message;
+          }
+        }
+
+        if (topicReceived === BASE + 'all/state') {
+          try {
+            const data = JSON.parse(message);
+            for (let i = 1; i <= 4; i++) {
+              updateRelay(i, !!data['relay' + i]);
+            }
+          } catch (e) {}
+        }
+      });
+
+      client.on('error', (err) => {
+        setStatus('❌ خطأ في اتصال MQTT');
+      });
+
+      client.on('close', () => {
+        setStatus('🔴 الاتصال مغلق');
+      });
+    }
+
+    function send(index, msg) {
+      if (!client || !client.connected) {
+        setStatus('غير متصل');
+        return;
+      }
+      client.publish(topic(index, 'set'), msg, { qos: 0 });
+    }
+
+    function toggleRelay(index) {
+      send(index, states[index - 1] ? 'OFF' : 'ON');
+    }
+
+    function sendAll(msg) {
+      if (!client || !client.connected) {
+        setStatus('غير متصل');
+        return;
+      }
+      client.publish(BASE + 'all/set', msg, { qos: 0 });
+    }
+
+    function disconnectMQTT() {
+      // **مسح البيانات المخزنة وإعادة العرض لصفحة تسجيل الدخول**
+      localStorage.removeItem('mqtt_user');
+      localStorage.removeItem('mqtt_pass');
+
+      if (client) client.end(true);
+      document.getElementById('controlCard').classList.add('hidden');
+      document.getElementById('loginCard').classList.remove('hidden');
+      setStatus('تم تسجيل الخروج ومسح البيانات المخزنة');
+    }
+  </script>
+</body>
+</html>
