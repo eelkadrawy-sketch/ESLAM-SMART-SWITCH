@@ -12,7 +12,7 @@ The system combines embedded hardware, cloud-based communication, and a responsi
 
 ## 🚀 Project Overview
 
-The system allows users to remotely control four electrical loads through a Web/Mobile interface.
+The system allows users to remotely control four electrical loads through a Web/Mobile interface
 
 Communication between the control interface and the ESP8266 is handled through **MQTT over HiveMQ Cloud**, with a dedicated device identity for each controller.
 
