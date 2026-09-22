@@ -219,4 +219,14 @@ ESLAM-SMART-SWITCH/
 ├── documentation/
 │   ├── mqtt-topi
 ```
+## 📸 Project Gallery
+
+### 🎛️ Smart Control
+![Smart Control](smart%20control.png)
+
+### 🔌 Wiring
+![Wiring](wiring.jpeg)
+
+### 📱 Dashboard
+![Dashboard](Dashboard.png)
 
