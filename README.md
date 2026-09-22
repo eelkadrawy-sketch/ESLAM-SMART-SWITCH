@@ -67,22 +67,12 @@ Communication between the control interface and the ESP8266 is handled through *
 
 ## 🏗️ System Architecture
 
+The system consists of three main layers:
+
+### 1. Web / Mobile Interface
+
+The user interacts with the Smart Home system through a responsive Web/Mobile interface.
+
 ```text
-             ┌─────────────────────────┐
-             │    Web / Mobile App     │
-             │  HTML + CSS + JavaScript│
-             └────────────┬────────────┘
-                          │
-                       WSS / MQTT
-                          │
-                          ▼
-             ┌─────────────────────────┐
-             │      HiveMQ Cloud       │
-             │      MQTT Broker        │
-             └────────────┬────────────┘
-                          │
-                     MQTT over TLS
-                          │
-                          ▼
-             ┌─────────────────────────┐
+Web
 ```
